@@ -1,0 +1,1715 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ForkitChat Frontend Demo</title>
+    <meta
+      name="description"
+      content="A static GitHub Pages ready prototype for ForkitChat's keyword tree discovery feed."
+    />
+    <style>
+:root {
+  color-scheme: dark;
+  --bg: #050607;
+  --panel: #0b0c0e;
+  --panel-2: #17181b;
+  --line: #202226;
+  --text: #eceef0;
+  --muted: #888b94;
+  --soft: #b7bac2;
+  --green: #12c998;
+  --green-2: #079a74;
+  --red: #12c998;
+  --yellow: #8fd6c7;
+  --blue: #2fc7ac;
+  --violet: #6d63d9;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 78% 4%, rgba(18, 201, 152, 0.13), transparent 28rem),
+    radial-gradient(circle at 50% 96%, rgba(18, 201, 152, 0.2), transparent 33rem),
+    radial-gradient(circle at 24% 88%, rgba(18, 201, 152, 0.14), transparent 28rem),
+    radial-gradient(circle at 74% 28%, rgba(255, 255, 255, 0.035), transparent 24rem),
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(180deg, #050607 0%, #07080a 100%);
+  background-size:
+    auto,
+    auto,
+    auto,
+    auto,
+    4.5rem 4.5rem,
+    4.5rem 4.5rem,
+    auto;
+  color: var(--text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 12.75rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 1.5rem 0.8rem;
+  border-right: 1px solid var(--line);
+  background: rgba(5, 6, 7, 0.9);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.brand-mark {
+  position: relative;
+  display: inline-block;
+  color: var(--green);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.55rem;
+  font-weight: 900;
+  line-height: 0.8;
+  transform: skewX(-8deg);
+}
+
+.brand-mark::before {
+  content: "";
+  position: absolute;
+  left: -0.18rem;
+  top: 0.18rem;
+  width: 0.12rem;
+  height: 0.78rem;
+  border-radius: 999px;
+  background: var(--green);
+  transform: rotate(-16deg);
+}
+
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  left: 0.36rem;
+  top: 0.27rem;
+  width: 0.84rem;
+  height: 0.24rem;
+  border-radius: 999px 999px 999px 0;
+  background: var(--green);
+  transform: rotate(-18deg);
+}
+
+.brand-rest {
+  margin-left: -0.08rem;
+  color: var(--text);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.side-nav {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 2.1rem;
+}
+
+.side-link,
+.plain-button,
+.ghost-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.65rem;
+  color: var(--soft);
+  text-decoration: none;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  padding: 0 0.6rem;
+  font-weight: 700;
+}
+
+.side-link.active,
+.side-link:hover,
+.plain-button:hover,
+.ghost-button:hover {
+  background: #121315;
+  color: var(--text);
+}
+
+.login-button,
+.primary-button {
+  min-height: 2.9rem;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 1.35rem;
+  background: linear-gradient(135deg, #2cae9f 0%, #239982 50%, #7664d8 100%) !important;
+  color: #f6f7fb;
+  font-weight: 800;
+  box-shadow:
+    0 12px 30px rgba(18, 201, 152, 0.13),
+    0 8px 24px rgba(113, 91, 232, 0.12);
+}
+
+.login-button {
+  width: 100%;
+  margin-top: 1.9rem;
+}
+
+.sidebar-foot {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1.8rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.main {
+  min-width: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: minmax(16rem, 38rem) auto;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 5.25rem;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: rgba(5, 6, 7, 0.86);
+  backdrop-filter: blur(18px);
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 2.75rem;
+  border: 1px solid #292b30;
+  border-radius: 8px;
+  background: #17181b;
+  padding: 0 1rem;
+  color: var(--muted);
+}
+
+.search-wrap input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.intro-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 34rem);
+  gap: 2rem;
+  align-items: end;
+  padding: 2rem 2rem 1.2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.45rem;
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 4.4vw, 4.8rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.intro-strip p:last-child,
+.feed-head p,
+.detail-panel p {
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.content-layout {
+  display: block;
+  max-width: 88rem;
+  margin: 0 auto;
+  padding: 1rem 2rem 3rem;
+}
+
+.feed-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.feed-head h2,
+.detail-panel h2 {
+  margin-bottom: 0.3rem;
+  font-size: 1.35rem;
+}
+
+select {
+  min-height: 2.55rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #17181b;
+  color: var(--soft);
+  padding: 0 0.85rem;
+}
+
+.bubble-field {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(16rem, 20.5rem));
+  justify-content: center;
+  align-items: flex-start;
+  gap: 3rem 3.6rem;
+  padding: 0.5rem 0 3rem;
+}
+
+.tree-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 100%, rgba(18, 201, 152, 0.08), transparent 13rem),
+    var(--panel);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transform-origin: center;
+  vertical-align: top;
+  transition:
+    transform 820ms cubic-bezier(0.18, 1.2, 0.22, 1),
+    border-radius 820ms cubic-bezier(0.18, 1.2, 0.22, 1),
+    border-color 320ms ease,
+    box-shadow 620ms ease,
+    filter 620ms ease,
+    opacity 620ms ease;
+}
+
+.tree-card:focus-visible,
+.tree-card.is-previewing,
+.tree-card.is-expanded {
+  border-color: rgba(18, 201, 152, 0.58);
+}
+
+.tree-card.is-expanded {
+  z-index: 3;
+  width: 118%;
+  margin-left: -9%;
+  transform: translateY(-0.08rem);
+  border-radius: 20px;
+  border-color: rgba(18, 201, 152, 0.68);
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.46),
+    0 0 0 1px rgba(18, 201, 152, 0.22);
+}
+
+.tree-cover {
+  position: relative;
+  height: 13.2rem;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 48% 88%, rgba(18, 201, 152, 0.12), transparent 18rem),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, #111214, #07110f);
+  background-size:
+    auto,
+    2.1rem 2.1rem,
+    2.1rem 2.1rem,
+    auto;
+  transition: height 820ms cubic-bezier(0.18, 1.2, 0.22, 1);
+}
+
+.tree-cover::before,
+.tree-cover::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tree-cover::before {
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(13, 15, 17, 0.35), transparent 18%, transparent 82%, rgba(13, 15, 17, 0.35)),
+    linear-gradient(180deg, rgba(5, 6, 7, 0.18), transparent 24%, transparent 78%, rgba(5, 6, 7, 0.68));
+}
+
+.tree-cover::after {
+  inset: auto 0 0;
+  height: 5.2rem;
+  background: linear-gradient(180deg, transparent, rgba(13, 15, 17, 0.88));
+}
+
+.tree-map {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition:
+    width 820ms cubic-bezier(0.18, 1.2, 0.22, 1),
+    height 820ms cubic-bezier(0.18, 1.2, 0.22, 1),
+    transform 520ms ease-out;
+}
+
+.tree-map svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tree-line {
+  fill: none;
+  stroke: rgba(199, 204, 210, 0.21);
+  stroke-linecap: round;
+  stroke-width: 4.4;
+}
+
+.tree-line.active {
+  stroke: var(--green);
+  stroke-width: 6;
+  filter: drop-shadow(0 0 11px rgba(18, 201, 152, 0.42));
+}
+
+.hidden-node-in-preview {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trail-line-in-preview {
+  opacity: 1;
+  stroke: rgba(199, 204, 210, 0.21);
+  stroke-dasharray: none;
+  filter: none;
+}
+
+.keyword-node {
+  position: absolute;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  max-width: 7.2rem;
+  border: 1.4px solid rgba(18, 201, 152, 0.5);
+  border-radius: 8px;
+  background: rgba(12, 14, 15, 0.92);
+  color: #d7dce3;
+  padding: 0.4rem 0.54rem;
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.28;
+  transition:
+    transform 360ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    color 260ms ease,
+    border-color 260ms ease,
+    background 260ms ease,
+    max-width 260ms ease,
+    padding 260ms ease,
+    box-shadow 260ms ease,
+    opacity 360ms ease,
+    font-size 260ms ease;
+  pointer-events: auto;
+}
+
+.node-detail {
+  display: none;
+  max-width: 5.7rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  vertical-align: bottom;
+}
+
+.tree-card.is-previewing .hidden-node-in-preview,
+.tree-card.is-expanded .hidden-node-in-preview {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tree-card.is-previewing .trail-line-in-preview,
+.tree-card.is-expanded .trail-line-in-preview {
+  opacity: 1;
+  stroke: rgba(199, 204, 210, 0.21);
+  stroke-dasharray: none;
+  filter: none;
+}
+
+.tree-card.is-previewing .trail-line-in-preview.active,
+.tree-card.is-expanded .trail-line-in-preview.active {
+  stroke: var(--green);
+  stroke-width: 6;
+  filter: drop-shadow(0 0 11px rgba(18, 201, 152, 0.42));
+}
+
+.keyword-node.active {
+  transform: translate(-50%, -50%) scale(1.03);
+  border-color: var(--green);
+  background: rgba(18, 201, 152, 0.16);
+  color: white;
+}
+
+.flow-cursor {
+  position: absolute;
+  z-index: 4;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid var(--green);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  transform: translate(-50%, -50%) rotate(45deg);
+  filter: drop-shadow(0 0 12px rgba(18, 201, 152, 0.7));
+  transition:
+    left 190ms ease,
+    top 190ms ease;
+  pointer-events: none;
+}
+
+.card-body {
+  padding: 0.7rem 0.78rem 0.82rem;
+  transition: padding 820ms cubic-bezier(0.18, 1.2, 0.22, 1);
+}
+
+.title-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.lock {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  transition: font-size 820ms cubic-bezier(0.18, 1.2, 0.22, 1);
+}
+
+.card-summary {
+  max-height: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  opacity: 0;
+  font-size: 0.72rem;
+  line-height: 1.58;
+  transition:
+    max-height 820ms cubic-bezier(0.18, 1.2, 0.22, 1),
+    margin 820ms cubic-bezier(0.18, 1.2, 0.22, 1),
+    opacity 420ms ease,
+    font-size 820ms cubic-bezier(0.18, 1.2, 0.22, 1);
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-size: 0.67rem;
+  transition: font-size 820ms cubic-bezier(0.18, 1.2, 0.22, 1);
+}
+
+.author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-width: 0;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  background: var(--avatar);
+  color: #06110e;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.stats {
+  flex: 0 0 auto;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  border: 1px solid #24272c;
+  border-radius: 6px;
+  color: #aeb2bb;
+  padding: 0.22rem 0.45rem;
+  font-size: 0.63rem;
+  transition: font-size 820ms cubic-bezier(0.18, 1.2, 0.22, 1);
+}
+
+.tree-card.is-previewing .tree-cover {
+  height: 13.2rem;
+}
+
+.tree-card.is-previewing .tree-map,
+.tree-card.is-expanded .tree-map {
+  width: 154%;
+  height: 142%;
+  transform: translate(
+    calc(-50% + var(--tree-pan-x, 0%)),
+    calc(-50% + var(--tree-pan-y, 0%))
+  );
+}
+
+.tree-card.is-previewing .keyword-node,
+.tree-card.is-expanded .keyword-node {
+  max-width: 6.2rem;
+  padding: 0.34rem 0.46rem;
+  font-size: 0.72rem;
+  line-height: 1.24;
+}
+
+.tree-card.is-previewing .node-detail,
+.tree-card.is-expanded .node-detail {
+  display: inline-block;
+}
+
+.tree-card.is-previewing .node-short,
+.tree-card.is-expanded .node-short {
+  display: none;
+}
+
+.tree-card.is-expanded .card-body {
+  padding: 0.78rem 0.88rem 0.94rem;
+}
+
+.tree-card.is-expanded .card-title {
+  font-size: 1.06rem;
+}
+
+.tree-card.is-expanded .card-summary {
+  max-height: 5.9rem;
+  margin-top: 0.42rem;
+  opacity: 1;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.tree-card.is-expanded .meta {
+  font-size: 0.7rem;
+}
+
+.tree-card.is-expanded .tag {
+  font-size: 0.66rem;
+}
+
+.detail-panel {
+  position: sticky;
+  top: 7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(17, 19, 22, 0.82);
+  box-shadow: var(--shadow);
+}
+
+.panel-sticky {
+  padding: 1rem;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.55rem;
+  margin: 1rem 0;
+}
+
+.metric-row div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem 0.55rem;
+  background: var(--panel-2);
+}
+
+.metric-row strong,
+.metric-row span {
+  display: block;
+}
+
+.metric-row strong {
+  font-size: 1.15rem;
+}
+
+.metric-row span {
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.path-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.path-item {
+  border-left: 2px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  background: #111315;
+  padding: 0.75rem 0.8rem;
+  color: var(--soft);
+  line-height: 1.5;
+}
+
+.path-item strong {
+  display: block;
+  margin-bottom: 0.18rem;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.empty {
+  display: block;
+  padding: 2rem;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+}
+
+@media (max-width: 1180px) {
+  .app-shell {
+    grid-template-columns: 5.4rem minmax(0, 1fr);
+  }
+
+  .brand span:last-child,
+  .side-link:not(.active),
+  .side-link.active {
+    font-size: 0;
+  }
+
+  .side-link span {
+    font-size: 1.1rem;
+  }
+
+  .login-button,
+  .sidebar-foot {
+    display: none;
+  }
+
+  .intro-strip,
+  .content-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bubble-field {
+    grid-template-columns: repeat(2, minmax(16rem, 22rem));
+    gap: 1.6rem;
+  }
+
+  .detail-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 980px) {
+  .bubble-field {
+    grid-template-columns: repeat(2, minmax(15rem, 1fr));
+    gap: 1.35rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: sticky;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: auto;
+    padding: 0.75rem;
+    overflow-x: auto;
+  }
+
+  .side-nav {
+    display: flex;
+    margin-top: 0;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+    min-height: auto;
+    padding: 0.75rem;
+  }
+
+  .top-actions {
+    display: none;
+  }
+
+  .intro-strip,
+  .content-layout {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  h1 {
+    font-size: 2.15rem;
+  }
+
+  .bubble-field {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .tree-card,
+  .tree-card.is-expanded {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 880px) {
+  .bubble-field {
+    gap: 1.2rem;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="#" aria-label="Forkit 首页">
+          <span class="brand-mark" aria-hidden="true">F</span><span class="brand-rest">orkit</span>
+        </a>
+        <nav class="side-nav">
+          <a class="side-link active" href="#"><span aria-hidden="true">⌂</span>发现</a>
+          <a class="side-link" href="#"><span aria-hidden="true">◎</span>正在讨论</a>
+          <a class="side-link" href="#"><span aria-hidden="true">＋</span>开始一棵树</a>
+          <a class="side-link" href="#"><span aria-hidden="true">◌</span>我的树</a>
+        </nav>
+        <button class="login-button">登录</button>
+        <div class="sidebar-foot">
+          <button class="plain-button">更多</button>
+          <button class="plain-button">关于 Forkit</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="search-wrap">
+            <span aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="搜索问题、关键词或作者" />
+          </div>
+          <div class="top-actions">
+            <button class="ghost-button">创作中心</button>
+            <button class="primary-button">Start a tree</button>
+          </div>
+        </header>
+
+        <section class="content-layout">
+          <div>
+            <div class="feed-head">
+              <select id="sortSelect" aria-label="排序方式">
+                <option value="hot">Hot branches</option>
+                <option value="new">Latest</option>
+                <option value="deep">Deepest</option>
+              </select>
+            </div>
+            <div id="feed" class="bubble-field" aria-live="polite"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+const discussions = [
+  {
+    id: "messy-love",
+    title: "你觉得纯爱梗和烂人真心梗哪个更有趣",
+    author: "小方can",
+    model: "gemini-3.7-flash",
+    time: "2026/09/08 20:50",
+    private: true,
+    turns: 5,
+    branches: 9,
+    heat: 128,
+    height: 278,
+    color: "#12c998",
+    summary:
+      "这场聊天从“纯爱”和“烂人真心”哪个更上头开始，把一个流行梗拆成叙事张力、道德矛盾和角色心理的讨论。后续继续追问自厌、克制、供奉和“明月不坠落”，让情感偏好变成一条关于复杂人性与纯粹信仰的分支。",
+    tags: ["情感", "叙事", "角色心理"],
+    keywords: [
+      "纯爱",
+      "烂人真心",
+      "道德矛盾",
+      "例外感",
+      "自厌",
+      "明月不坠",
+      "供奉",
+    ],
+    path: [
+      "烂人真心为什么更上头",
+      "它和纯爱的内核是否相同",
+      "堕落中索求爱是否会自厌",
+      "明月不照我也不能掉下来",
+    ],
+  },
+  {
+    id: "cancer-switch",
+    title: "癌症“总开关”为什么总让人将信将疑",
+    author: "Hathaway",
+    model: "gemini-3.5-flash",
+    time: "2026/06/14 19:31",
+    private: false,
+    turns: 11,
+    branches: 6,
+    heat: 206,
+    height: 318,
+    color: "#2fc7ac",
+    summary:
+      "这场聊天从媒体反复宣称“癌症总开关被找到”的疑点切入，先解释癌症并不是单一疾病，也没有一个能一键关闭的万能按钮。随后一路追问小鼠模型、类器官、临床试验失败率和科研传播的落差，把“重大突破”为何令人将信将疑讲清楚。",
+    tags: ["医学科普", "科研传播", "临床"],
+    keywords: [
+      "总开关",
+      "小鼠模型",
+      "临床试验",
+      "肿瘤异质性",
+      "类器官",
+      "免疫系统",
+      "媒体流量",
+    ],
+    path: [
+      "癌症不是一种疾病",
+      "小鼠有效为什么人体失败",
+      "为什么不用更接近人的模型",
+      "类器官不能替代全身系统",
+    ],
+  },
+  {
+    id: "insurance",
+    title: "家庭保险配置：老人、夫妻和儿童分别怎么投",
+    author: "匿名",
+    model: "gemini-3.7-flash",
+    time: "2026/09/02 16:36",
+    private: false,
+    turns: 4,
+    branches: 7,
+    heat: 94,
+    height: 244,
+    color: "#8fd6c7",
+    summary:
+      "这场聊天把家庭保险配置拆成老人、中年夫妻和儿童三类人群，先建立“先大人后小孩、先保障后理财”的风险排序。后续继续追问定期寿险、意外险、百万医疗和少儿重疾的关系，适合用来快速看清不同险种到底各自兜住什么风险。",
+    tags: ["保险", "家庭配置", "消费决策"],
+    keywords: [
+      "先大人后小孩",
+      "定期寿险",
+      "重疾险",
+      "百万医疗",
+      "老年意外",
+      "少儿重疾",
+      "叠加赔付",
+    ],
+    path: [
+      "家庭三代人保险配置建议",
+      "意外险和定期寿险是否冲突",
+      "身故伤残能否叠加",
+      "医疗费报销不能重复获利",
+    ],
+  },
+  {
+    id: "privacy-noise",
+    title: "保护隐私为什么反而会把数据搞失真",
+    author: "Hathaway",
+    model: "gemini-3.5-flash",
+    time: "2026/06/14 19:40",
+    private: false,
+    turns: 9,
+    branches: 9,
+    heat: 173,
+    height: 296,
+    color: "#6d63d9",
+    summary:
+      "这场聊天从人口普查数据为什么会因为隐私保护而失真开始，解释差分隐私、噪声注入和小样本社区被误差吞没的机制。接着延伸到匿名数据重识别、数据脱敏、合成数据和隐私预算，呈现“保护个人”和“保留公共数据价值”之间的真实拉扯。",
+    tags: ["隐私", "数据治理", "公共政策"],
+    keywords: [
+      "差分隐私",
+      "噪声注入",
+      "小样本失真",
+      "数据粗化",
+      "K匿名",
+      "合成数据",
+      "隐私预算",
+    ],
+    path: [
+      "隐私保护为何导致数据失真",
+      "数据脱敏如何保可用性",
+      "匿名数据为什么能被重识别",
+      "普通人如何减少画像",
+    ],
+  },
+  {
+    id: "human-machine",
+    title: "未来会发展成人人机协同模式吗",
+    author: "硅基生命",
+    model: "gemini-3.5-flash",
+    time: "2026/08/18 13:26",
+    private: false,
+    turns: 4,
+    branches: 4,
+    heat: 88,
+    height: 266,
+    color: "#12c998",
+    summary:
+      "这场聊天从 AI 时代是否会进入“人人机协同”开始，把组织协作从人人协同、人机协同推进到多人和多个 Agent 混合决策。它不只停在概念层面，还收束到工程开发里的认知对齐、身份认证、动态共识和约束求解，适合看未来团队协作会怎么变化。",
+    tags: ["AI协作", "组织设计", "工程管理"],
+    keywords: [
+      "人人机协同",
+      "效率孤岛",
+      "认知编译器",
+      "语义指纹",
+      "动态对齐",
+      "约束求解",
+      "惰性共识",
+    ],
+    path: [
+      "人人机协同是否是趋势",
+      "小团队目标一致但认知分散",
+      "AI 如何赋予身份认证",
+      "人人都是决策者时如何共识",
+    ],
+  },
+  {
+    id: "digital-baby",
+    title: "从出生起创建一个 Agent 持续跟踪宝宝，可以用来做什么",
+    author: "albert7kin",
+    model: "gemini-3.5-flash",
+    time: "2026/08/18 17:15",
+    private: false,
+    turns: 6,
+    branches: 5,
+    heat: 142,
+    height: 334,
+    color: "#12c998",
+    summary:
+      "这场聊天从给新生儿同步建立一个持续成长的 Agent 这个设想出发，讨论它究竟是数字生命、数字外脑，还是某种“缸中之脑”的现实版本。后续分支落到预测医学、教育脚手架、亲子反馈和人生轨迹被过早定义的风险，科幻感很强但问题很现实。",
+    tags: ["Agent", "数字生命", "哲学"],
+    keywords: [
+      "数字生命",
+      "具身交互",
+      "缸中之脑",
+      "双向反馈",
+      "数字外脑",
+      "因材施教",
+      "偏离轨道",
+    ],
+    path: [
+      "持续复刻成长算不算元宇宙",
+      "脑机接口能否复刻缸中之脑",
+      "反馈上限会怎样改变生命",
+      "儿童 Agent 应该如何被使用",
+    ],
+  },
+  {
+    id: "control-system",
+    title: "反馈系数不确定的闭环系统要如何控制",
+    author: "汪抖抖呦",
+    model: "gemini-3.5-flash",
+    time: "2026/06/25 21:08",
+    private: false,
+    turns: 7,
+    branches: 3,
+    heat: 67,
+    height: 306,
+    color: "#2fc7ac",
+    summary:
+      "这场聊天从一个反馈系数不确定的闭环控制问题开始，围绕 RL 电感模型、PI 控制器和未知传感器变比展开工程化推导。它继续追问 NLMS 为什么会收敛、开环预测漂移会带来什么误差，以及龙伯格观测器会不会破坏辨识梯度，是偏硬核的控制系统分支。",
+    tags: ["控制系统", "工程", "辨识"],
+    keywords: [
+      "RL模型",
+      "PI控制",
+      "传感器变比",
+      "NLMS",
+      "开环漂移",
+      "龙伯格观测器",
+      "辨识梯度",
+    ],
+    path: [
+      "未知反馈系数如何控制",
+      "迭代公式为什么收敛",
+      "开环预测偏离会造成什么",
+      "观测器反馈会不会消灭残差",
+    ],
+  },
+  {
+    id: "journey-west",
+    title: "灵台方寸山，斜月三星洞这个字谜如何解",
+    author: "豆丁圢圢",
+    model: "gemini-3.7-flash",
+    time: "2026/08/29 09:12",
+    private: false,
+    turns: 6,
+    branches: 5,
+    heat: 121,
+    height: 252,
+    color: "#12c998",
+    summary:
+      "这场聊天从“灵台方寸山，斜月三星洞”的心字谜切入，先把字形拆解和《西游记》的修心寓言联系起来。后续又顺着孙悟空由道入佛、心猿意马、天仙地仙和大觉金仙等问题展开，把一个谜语扩成了神话体系和精神修行的讨论。",
+    tags: ["西游记", "神话体系", "字谜"],
+    keywords: [
+      "心字谜",
+      "灵台方寸",
+      "斜月三星",
+      "由道入佛",
+      "心猿",
+      "天仙地仙",
+      "大觉金仙",
+    ],
+    path: [
+      "斜月三星洞谜底为何是心",
+      "孙悟空为什么最后皈依佛门",
+      "天仙地仙有什么区别",
+      "菩提祖师是什么位格",
+    ],
+  },
+  {
+    id: "spacex-ipo",
+    title: "SpaceX 正式上市，凭什么撑得起几千亿的估值？",
+    author: "Hathaway",
+    model: "gemini-3.5-flash",
+    time: "2026/06/14 19:06",
+    private: false,
+    turns: 10,
+    branches: 4,
+    heat: 187,
+    height: 286,
+    color: "#2fc7ac",
+    summary:
+      "这场聊天从 SpaceX 为什么能撑起超高估值开始，把它从火箭公司重新理解为太空基建、卫星通信和 AI 算力叙事的组合体。随后追问星链现金流为什么强、发射成本垄断如何形成，以及私人卫星网络会不会卡住国家通信命脉。",
+    tags: ["商业", "航天", "资本市场"],
+    keywords: [
+      "SpaceX上市",
+      "星链现金流",
+      "发射垄断",
+      "太空算力",
+      "星舰期权",
+      "通信命脉",
+      "太空主权",
+    ],
+    path: [
+      "SpaceX 凭什么撑起高估值",
+      "星链为什么这么赚钱",
+      "星链会不会卡住国家通信",
+      "太空垄断到底是好事吗",
+    ],
+  },
+  {
+    id: "world-cup-defense",
+    title: "世界杯上巴西被摩洛哥逼平——为什么传统强队越来越容易被“弱旅”拖住？",
+    author: "Hathaway",
+    model: "gemini-3.5-flash",
+    time: "2026/06/14 18:58",
+    private: false,
+    turns: 10,
+    branches: 10,
+    heat: 164,
+    height: 318,
+    color: "#12c998",
+    summary:
+      "这场聊天从巴西被摩洛哥逼平这样的比赛现象开始，解释为什么现代足球里传统强队越来越难靠球星名气轻松碾压。它继续拆解科学防守、低位铁桶阵、全球化青训和国家队进攻构建成本，并追问进攻方如何通过强侧超载、高位逼抢主动制造空间。",
+    tags: ["足球", "战术", "世界杯"],
+    keywords: [
+      "传统强队",
+      "科学防守",
+      "低位铁桶阵",
+      "人才全球化",
+      "进攻成本",
+      "强侧超载",
+      "高位逼抢",
+    ],
+    path: [
+      "传统强队为何更容易被拖住",
+      "现代足球防守如何练成",
+      "进攻方如何破解铁桶阵",
+      "世界杯是否再难出现统治级球队",
+    ],
+  },
+  {
+    id: "child-debt",
+    title: "爷爷和爸爸都走了，2岁的孩子要替他们还50万贷款吗？",
+    author: "Hathaway",
+    model: "gemini-3.5-flash",
+    time: "2026/06/14 19:19",
+    private: false,
+    turns: 6,
+    branches: 6,
+    heat: 151,
+    height: 254,
+    color: "#8fd6c7",
+    summary:
+      "这场聊天从“2 岁孩子是否要替已故长辈还 50 万贷款”这个极端问题切入，先澄清现代法律里并不存在无条件父债子偿。后续继续拆解限定继承、必留份规则、放弃继承、共同借款和恶意转移财产等边界，让家庭债务责任变得更可判断。",
+    tags: ["法律", "家庭债务", "民法典"],
+    keywords: [
+      "父债子偿",
+      "限定继承",
+      "放弃继承",
+      "必留份",
+      "共同借款",
+      "担保人",
+      "撤销权",
+    ],
+    path: [
+      "2 岁孩子需要替已故父辈还贷吗",
+      "父债子偿是不是早就过时了",
+      "父母负债该不该放弃继承",
+      "人死无遗产债务是否一笔勾销",
+    ],
+  },
+  {
+    id: "casino-clock",
+    title: "为什么超市几乎不挂钟，赌场更是没有窗户和时钟？",
+    author: "Hathaway",
+    model: "gemini-3.5-flash",
+    time: "2026/06/14 20:15",
+    private: false,
+    turns: 6,
+    branches: 6,
+    heat: 133,
+    height: 304,
+    color: "#12c998",
+    summary:
+      "这场聊天从超市不挂钟、赌场没有窗户和时钟的空间设计切入，解释商业环境如何通过剥夺时间感来延长停留和消费。后续继续追问赌场的筹码去货币化、差点就赢、声音与香氛刺激、免费福利和掌控错觉，把环境设计背后的行为学机制串起来。",
+    tags: ["消费心理", "空间设计", "行为学"],
+    keywords: [
+      "时间感",
+      "无窗空间",
+      "沉浸购物",
+      "筹码去货币化",
+      "差点就赢",
+      "感官环境",
+      "掌控错觉",
+    ],
+    path: [
+      "超市和赌场为什么没有时钟",
+      "赌场让人停不下来的套路",
+      "老虎机差一点就中为何上头",
+      "普通人如何保持清醒",
+    ],
+  },
+];
+
+const nodeDetailsById = {
+  "messy-love": [
+    "纯爱和烂人真心，哪个梗更有趣",
+    "烂人真心为什么让人更上头",
+    "复杂人性如何制造道德矛盾",
+    "唯一的例外感从哪里来",
+    "伸手索爱会不会产生自厌",
+    "明月不照我，也不能坠落吗",
+    "爱从占有变成供奉了吗",
+  ],
+  "cancer-switch": [
+    "癌症真的存在一个总开关吗",
+    "为什么小鼠有效，人体却失败",
+    "临床试验如何跨过死亡之谷",
+    "肿瘤异质性为何让药物失效",
+    "类器官能不能替代动物实验",
+    "免疫系统如何影响抗癌疗效",
+    "媒体为何把局部突破说成万能钥匙",
+  ],
+  insurance: [
+    "三代人的家庭保险先保谁",
+    "定期寿险要覆盖哪些家庭责任",
+    "重疾险应该优先做足保额吗",
+    "百万医疗险解决哪种大额支出",
+    "老年人慢病还能怎么补保障",
+    "儿童重疾险为何需要单独配置",
+    "身故、伤残和医疗能否叠加赔",
+  ],
+  "privacy-noise": [
+    "隐私保护为什么会让统计失真",
+    "噪声注入如何淹没小样本社区",
+    "小样本误差会怎样影响公共决策",
+    "数据粗化和抑制会牺牲什么",
+    "匿名数据为什么仍可能被重识别",
+    "合成数据能否保留真实规律",
+    "隐私预算如何平衡安全和可用性",
+  ],
+  "human-machine": [
+    "人人机协同会不会成为下一种组织形态",
+    "为什么团队会形成效率孤岛",
+    "AI 能否把不同认知编译到一起",
+    "如何用语义指纹确认协作者身份",
+    "多人和 Agent 如何持续动态对齐",
+    "人人都是决策者时如何求解约束",
+    "共识为什么会变得惰性而缓慢",
+  ],
+  "digital-baby": [
+    "持续复刻婴儿成长算不算数字生命",
+    "Agent 如何通过具身交互学习成长",
+    "同步意识会不会变成缸中之脑",
+    "数字分身和现实人生如何双向反馈",
+    "数字外脑会替孩子保存什么",
+    "预测式教育会不会限制因材施教",
+    "成长轨迹被提前定义后如何偏离",
+  ],
+  "control-system": [
+    "反馈系数未知时闭环还能稳定吗",
+    "RL 模型和 PI 控制怎样配合",
+    "传感器变比未知如何在线辨识",
+    "NLMS 迭代公式为什么会收敛",
+    "开环预测漂移会造成多大误差",
+    "龙伯格观测器如何补足不可测状态",
+    "观测器反馈会不会消灭辨识梯度",
+  ],
+  "journey-west": [
+    "灵台方寸山的谜底为什么是心",
+    "斜月三星洞如何拆出心字结构",
+    "孙悟空为何从道门走向佛门",
+    "心猿意马和修行有什么关系",
+    "天仙、地仙的位阶如何区分",
+    "菩提祖师到底处于什么位格",
+    "大觉金仙和成佛之间差多少",
+  ],
+  "spacex-ipo": [
+    "SpaceX 凭什么撑起超高估值",
+    "星链订阅为何能带来稳定现金流",
+    "发射成本垄断是怎样形成的",
+    "太空算力叙事真的能兑现吗",
+    "星舰期权如何推高远期想象",
+    "私人卫星网络会卡住通信命脉吗",
+    "太空主权和商业垄断如何冲突",
+  ],
+  "world-cup-defense": [
+    "传统强队为什么越来越容易被拖住",
+    "科学防守如何把失误压到最低",
+    "低位铁桶阵怎样压缩进攻空间",
+    "全球化人才如何抹平强弱差距",
+    "为什么进攻构建比防守更昂贵",
+    "强侧超载如何制造弱侧空间",
+    "高位逼抢能不能直接破解铁桶阵",
+  ],
+  "child-debt": [
+    "两岁孩子需要替已故父辈还贷吗",
+    "限定继承如何限制还债范围",
+    "放弃继承能不能避免个人负债",
+    "必留份如何保护未成年人的生活",
+    "共同借款人和普通子女有何不同",
+    "签了担保后是否要用个人财产偿还",
+    "恶意转移遗产会不会被法院撤销",
+  ],
+  "casino-clock": [
+    "超市和赌场为什么都没有时钟",
+    "无窗空间如何让人失去时间感",
+    "沉浸式购物怎样延长停留时间",
+    "筹码去货币化如何降低花钱痛感",
+    "差一点赢为何比单纯输更上头",
+    "声音、香氛和免费福利怎样影响判断",
+    "掌控错觉为什么会让人持续下注",
+  ],
+};
+
+const feed = document.querySelector("#feed");
+const searchInput = document.querySelector("#searchInput");
+const sortSelect = document.querySelector("#sortSelect");
+const detailTitle = document.querySelector("#detailTitle");
+const detailSummary = document.querySelector("#detailSummary");
+const detailTurns = document.querySelector("#detailTurns");
+const detailBranches = document.querySelector("#detailBranches");
+const detailHeat = document.querySelector("#detailHeat");
+const detailPath = document.querySelector("#detailPath");
+
+const nodePositions = [
+  [50, 10],
+  [21, 38],
+  [79, 38],
+  [7, 74],
+  [39, 78],
+  [93, 74],
+  [63, 92],
+];
+
+const edges = [
+  [0, 1],
+  [0, 2],
+  [1, 3],
+  [1, 4],
+  [2, 5],
+  [4, 6],
+];
+
+const previewSequence = [0, 1, 4, 6, 2, 5, 3];
+let expandedCard = null;
+let previewingCard = null;
+let previewTimer = null;
+let previewDelayTimer = null;
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function renderFeed() {
+  stopPreview();
+  stopPreviewDelay();
+  expandedCard = null;
+  previewingCard = null;
+  const query = searchInput.value.trim().toLowerCase();
+  const sortMode = sortSelect.value;
+  let items = discussions.filter((item) => {
+    const blob = [item.title, item.author, item.summary, item.tags.join(" "), item.keywords.join(" ")]
+      .join(" ")
+      .toLowerCase();
+    return blob.includes(query);
+  });
+
+  items = items.sort((a, b) => {
+    if (sortMode === "new") return b.time.localeCompare(a.time);
+    if (sortMode === "deep") return b.turns + b.branches - (a.turns + a.branches);
+    return b.heat - a.heat;
+  });
+
+  feed.innerHTML = items.length
+    ? items.map((item, index) => renderCard(item, index)).join("")
+    : '<div class="empty">没有找到对应的问题树。</div>';
+
+  feed.querySelectorAll(".tree-card").forEach((card) => {
+    const item = discussions.find((entry) => entry.id === card.dataset.id);
+    wireCard(card, item);
+  });
+}
+
+function renderCard(item, cardIndex = 0) {
+  const nodes = item.keywords
+    .map((keyword, index) => {
+      const [left, top] = nodePositions[index] || nodePositions[nodePositions.length - 1];
+      const nodeClasses = ["keyword-node", index > 5 ? "hidden-node-in-preview" : ""]
+        .filter(Boolean)
+        .join(" ");
+      const expanded = (nodeDetailsById[item.id]?.[index] || keyword).split(/[，。！？、：:]/)[0];
+      return `<span class="${nodeClasses}" data-node="${index}" style="left:${left}%; top:${top}%"><span class="node-short">${escapeHtml(keyword)}</span><span class="node-detail">${escapeHtml(expanded)}</span></span>`;
+    })
+    .join("");
+
+  const lines = edges
+    .map(([from, to], index) => {
+      const a = nodePositions[from];
+      const b = nodePositions[to];
+      const lineClasses = ["tree-line", to > 5 ? "trail-line-in-preview" : ""]
+        .filter(Boolean)
+        .join(" ");
+      const previewEndX = to > 5 ? Math.min(74, a[0] + 8) : b[0];
+      const previewEndY = to > 5 ? 100 : b[1];
+      const previewPath =
+        to > 5
+          ? `M ${a[0]} ${a[1]} C ${a[0] + 3} ${a[1] + 11}, ${previewEndX - 2} ${previewEndY - 10}, ${previewEndX} ${previewEndY}`
+          : `M ${a[0]} ${a[1]} C ${a[0]} ${a[1] + 16}, ${b[0]} ${b[1] - 16}, ${b[0]} ${b[1]}`;
+      const fullPath = `M ${a[0]} ${a[1]} C ${a[0]} ${a[1] + 16}, ${b[0]} ${b[1] - 16}, ${b[0]} ${b[1]}`;
+      return `<path class="${lineClasses}" data-edge="${index}" data-preview-path="${previewPath}" data-full-path="${fullPath}" d="${previewPath}" />`;
+    })
+    .join("");
+
+  return `
+    <article class="tree-card" data-id="${item.id}" tabindex="0" style="--cover-height:${item.height}px; --avatar:${item.color}">
+      <div class="tree-cover">
+        <div class="tree-map">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
+          ${nodes}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="title-row">
+          <span class="lock" aria-hidden="true">${item.private ? "▢" : "◇"}</span>
+          <h3 class="card-title">${escapeHtml(item.title)}</h3>
+        </div>
+        <p class="card-summary">${escapeHtml(item.summary)}</p>
+        <div class="tags">${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+        <div class="meta">
+          <span class="author"><span class="avatar">${escapeHtml(item.author.slice(0, 1))}</span>${escapeHtml(item.author)}</span>
+          <span class="stats">${item.turns} 轮 · ${item.branches} 枝 · 热度 ${item.heat}</span>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function wireCard(card, item) {
+  const nodes = [...card.querySelectorAll(".keyword-node")];
+  const lines = [...card.querySelectorAll(".tree-line")];
+  const treeCover = card.querySelector(".tree-cover");
+  let activeNodeIndex = -1;
+  let pointerInCover = false;
+  let isPreviewing = false;
+
+  function setActive(index) {
+    const activeEdges = new Set();
+    let current = index;
+    activeNodeIndex = index;
+
+    while (current > 0) {
+      const edgeIndex = edges.findIndex(([, to]) => to === current);
+      if (edgeIndex < 0) break;
+      activeEdges.add(edgeIndex);
+      current = edges[edgeIndex][0];
+    }
+
+    nodes.forEach((node, nodeIndex) => node.classList.toggle("active", nodeIndex === index));
+    lines.forEach((line, lineIndex) => line.classList.toggle("active", activeEdges.has(lineIndex)));
+    focusNode(index);
+  }
+
+  function focusNode(index) {
+    if (pointerInCover || index < 0) return;
+    const [left, top] = nodePositions[index] || nodePositions[0];
+    card.style.setProperty("--tree-pan-x", `${((50 - left) * 0.84).toFixed(2)}%`);
+    card.style.setProperty("--tree-pan-y", `${((50 - top) * 1.02).toFixed(2)}%`);
+  }
+
+  function getNearestNodeIndex(xPercent, yPercent) {
+    return nodePositions.reduce(
+      (nearest, [left, top], index) => {
+        const distance = (left - xPercent) ** 2 + (top - yPercent) ** 2;
+        return distance < nearest.distance ? { index, distance } : nearest;
+      },
+      { index: 0, distance: Number.POSITIVE_INFINITY },
+    ).index;
+  }
+
+  function showFullTree() {
+    lines.forEach((line) => {
+      if (line.dataset.fullPath) line.setAttribute("d", line.dataset.fullPath);
+    });
+  }
+
+  function resetTree() {
+    setActive(-1);
+    lines.forEach((line) => {
+      if (line.dataset.previewPath) line.setAttribute("d", line.dataset.previewPath);
+    });
+    card.style.setProperty("--tree-pan-x", "0%");
+    card.style.setProperty("--tree-pan-y", "0%");
+  }
+
+  function startPreview() {
+    if (previewingCard && previewingCard !== card) {
+      previewingCard.dispatchEvent(new CustomEvent("preview:stop"));
+    }
+    stopPreview();
+    isPreviewing = true;
+    previewingCard = card;
+    card.classList.add("is-previewing");
+    let sequenceIndex = 0;
+    showFullTree();
+    setActive(previewSequence[sequenceIndex]);
+    updateDetail(item, previewSequence[sequenceIndex]);
+
+    previewTimer = window.setInterval(() => {
+      if (pointerInCover) return;
+      sequenceIndex = (sequenceIndex + 1) % previewSequence.length;
+      const nodeIndex = previewSequence[sequenceIndex];
+      setActive(nodeIndex);
+      updateDetail(item, nodeIndex);
+    }, 1150);
+  }
+
+  function stopCardPreview() {
+    isPreviewing = false;
+    stopPreview();
+    if (previewingCard === card) previewingCard = null;
+    card.classList.remove("is-previewing");
+    resetTree();
+  }
+
+  nodes.forEach((node, index) => {
+    node.addEventListener("click", (event) => {
+      event.stopPropagation();
+      expandCard(card, startPreview);
+      setActive(index);
+      updateDetail(item, index);
+    });
+  });
+
+  card.addEventListener("click", () => {
+    if (card.classList.contains("is-expanded")) {
+      collapseCard(card);
+      return;
+    }
+
+    expandCard(card, startPreview);
+  });
+
+  card.addEventListener("mouseenter", () => {
+    if (isPreviewing) return;
+    card.classList.add("is-previewing");
+    focusNode(0);
+    stopPreviewDelay();
+    previewDelayTimer = window.setTimeout(startPreview, 300);
+  });
+
+  card.addEventListener("mouseleave", () => {
+    stopPreviewDelay();
+    pointerInCover = false;
+    if (card.classList.contains("is-expanded")) {
+      focusNode(activeNodeIndex);
+      return;
+    }
+    stopCardPreview();
+  });
+
+  card.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    card.click();
+  });
+
+  treeCover.addEventListener("mouseenter", () => {
+    if (!card.classList.contains("is-expanded")) return;
+    pointerInCover = true;
+  });
+
+  treeCover.addEventListener("mousemove", (event) => {
+    if (!card.classList.contains("is-expanded")) return;
+    pointerInCover = true;
+    const rect = treeCover.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    card.style.setProperty("--tree-pan-x", `${(-x * 52).toFixed(2)}%`);
+    card.style.setProperty("--tree-pan-y", `${(-y * 86).toFixed(2)}%`);
+
+    const nearestNodeIndex = getNearestNodeIndex((x + 0.5) * 100, (y + 0.5) * 100);
+    setActive(nearestNodeIndex);
+    updateDetail(item, nearestNodeIndex);
+  });
+
+  treeCover.addEventListener("mouseleave", () => {
+    pointerInCover = false;
+    focusNode(activeNodeIndex);
+  });
+
+  card.addEventListener("preview:reset", resetTree);
+  card.addEventListener("preview:stop", stopCardPreview);
+}
+
+function stopPreview() {
+  if (!previewTimer) return;
+  window.clearInterval(previewTimer);
+  previewTimer = null;
+}
+
+function stopPreviewDelay() {
+  if (!previewDelayTimer) return;
+  window.clearTimeout(previewDelayTimer);
+  previewDelayTimer = null;
+}
+
+function expandCard(card, startPreview) {
+  stopPreviewDelay();
+  if (expandedCard && expandedCard !== card) {
+    expandedCard.classList.remove("is-expanded");
+    expandedCard.dispatchEvent(new CustomEvent("preview:stop"));
+  }
+
+  expandedCard = card;
+  card.classList.add("is-expanded");
+  startPreview();
+}
+
+function collapseCard(card) {
+  card.classList.remove("is-expanded");
+  if (expandedCard === card) expandedCard = null;
+}
+
+function updateDetail(item, activeIndex = 0) {
+  if (!detailTitle) return;
+  detailTitle.textContent = item.title;
+  detailSummary.textContent = item.summary;
+  detailTurns.textContent = item.turns;
+  detailBranches.textContent = item.branches;
+  detailHeat.textContent = item.heat;
+  detailPath.innerHTML = item.path
+    .map((step, index) => {
+      const keyword = item.keywords[Math.min(index + activeIndex, item.keywords.length - 1)];
+      return `<div class="path-item"><strong>${escapeHtml(keyword)}</strong>${escapeHtml(step)}</div>`;
+    })
+    .join("");
+}
+
+searchInput.addEventListener("input", renderFeed);
+sortSelect.addEventListener("change", renderFeed);
+
+renderFeed();
+
+    </script>
+  </body>
+</html>
